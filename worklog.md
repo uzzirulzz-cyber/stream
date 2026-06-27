@@ -130,3 +130,27 @@ Stage Summary:
 - URL routing verified: ?view=home loads home (Live Now/Featured Football/Trending/100% Free), ?view=admin loads admin (Playlists/Channels/Revenue/Ads/Analytics)
 - Sitemap includes view=home and view=admin for search engine indexing
 - Lint clean, dev server running
+
+---
+Task ID: MONETIZATION-BUILT-IN
+Agent: main
+Task: Built-in monetization to generate revenue from website traffic
+
+Work Log:
+- Schema: added AffiliateLink, Donation, SponsoredPlacement, TrafficEvent models
+- Built monetization-extras lib: trackAffiliateClick (CPC), recordDonation, getSponsoredPlacements, trackTraffic (page views), estimateRevenue (RPM calculator), seedMonetizationExtras (6 affiliate links + 4 sponsored placements)
+- Added interstitial + sidebar ad slots to seed (total 6 placements now)
+- Updated seed to add missing ad placements (not just on first run)
+- API routes: /api/affiliates (list), /api/affiliates/[id]/click (track CPC), /api/donations (record tip), /api/sponsored (placements), /api/traffic (page view tracking), /api/revenue/estimate (traffic-based projection)
+- Frontend: AffiliateStorefront (6 partner offers: betting/merch/VPN/gear/tickets/fantasy), DonationWidget (preset $2/$5/$10/$25 + custom + message), InterstitialAd (full-screen between navigations, 5s countdown, cooldown), RevenueEstimator (admin: projects monthly revenue from traffic with breakdown chart)
+- Wired: traffic tracking on every view change, affiliate store + donation widget on home, interstitial on category navigation, revenue estimator in admin Revenue tab
+
+Stage Summary:
+- 6 affiliate links seeded (betting $1.50 CPC, merch $0.80, VPN $2.00, gear $1.00, tickets $1.20, fantasy $1.80)
+- 4 sponsored placements seeded (home-rail, category-top, live-top, search-top)
+- Interstitial ad verified: shows "$500 Welcome Bonus" on Football nav, 5s skip countdown works
+- Donation verified: $5.00 test donation recorded successfully
+- Revenue estimator: 100K monthly views → $1,030/mo projected (ads $350 + video $320 + affiliate $120 + donations $40 + sponsored $200)
+- Traffic tracking fires on every view change → drives RPM calculation
+- All monetization widgets visible on home: Partner Offers + Support PlayBeat Arena + Donate
+- Lint clean, browser-verified

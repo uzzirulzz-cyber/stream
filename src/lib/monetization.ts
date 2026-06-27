@@ -194,7 +194,7 @@ export async function seedMonetization(): Promise<void> {
     });
   }
 
-  // Seed a couple of demo ad slots so the homepage has ads on first run.
+  // Seed ad slots — add any missing placements.
   const ads = [
     {
       name: 'Home Leaderboard',
@@ -244,9 +244,37 @@ export async function seedMonetization(): Promise<void> {
       cpmCents: 800,
       cpcCents: 0,
     },
+    {
+      name: 'Interstitial — Sportsbook',
+      placement: 'interstitial',
+      type: 'image',
+      imageUrl: null,
+      targetUrl: 'https://example.com/sportsbook',
+      headline: '$500 Welcome Bonus',
+      description: 'New players only. Bet on football, cricket, UFC & more. 18+.',
+      cta: 'Claim Now',
+      cpmCents: 500,
+      cpcCents: 150,
+    },
+    {
+      name: 'Sidebar Sticky',
+      placement: 'sidebar',
+      type: 'image',
+      imageUrl: null,
+      targetUrl: 'https://example.com/streaming-deal',
+      headline: 'Get 50% Off Streaming Gear',
+      description: 'Limited time offer on capture cards, mics & lighting.',
+      cta: 'Shop Deal',
+      cpmCents: 180,
+      cpcCents: 50,
+    },
   ];
 
+  // Get existing placements so we only add missing ones.
+  const existingPlacements = new Set((await db.adSlot.findMany({ select: { placement: true } })).map((s) => s.placement));
   for (const a of ads) {
-    await db.adSlot.create({ data: a });
+    if (!existingPlacements.has(a.placement)) {
+      await db.adSlot.create({ data: a });
+    }
   }
 }

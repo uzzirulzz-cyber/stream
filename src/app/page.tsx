@@ -20,7 +20,14 @@ export default function Home() {
   useEffect(() => {
     apiAction('POST', '/api/seed').catch(() => {});
     fetch('/api/revenue?track=pageview', { method: 'GET' }).catch(() => {});
+    // Track traffic event for monetization.
+    apiAction('POST', '/api/traffic', { kind: 'session_start', path: '/' }).catch(() => {});
   }, []);
+
+  // Track page view on every view change (drives RPM + revenue estimator).
+  useEffect(() => {
+    apiAction('POST', '/api/traffic', { kind: 'page_view', path: `/?view=${view}` }).catch(() => {});
+  }, [view]);
 
   // Sync view with browser back/forward (popstate).
   useEffect(() => {

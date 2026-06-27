@@ -6,6 +6,8 @@ import { useApp } from '@/lib/store';
 import { ChannelRail } from '@/components/channel-rail';
 import { AdBanner } from '@/components/ad-banner';
 import { HashtagsWidget } from '@/components/hashtags-widget';
+import { AffiliateStorefront } from '@/components/affiliate-storefront';
+import { DonationWidget } from '@/components/donation-widget';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import type { ChannelDTO } from '@/lib/types';
@@ -191,6 +193,14 @@ export function HomeView() {
           <FreeAccessBanner />
         </div>
         <HashtagsWidget />
+      </div>
+
+      {/* Monetization: affiliate storefront + donation widget */}
+      <div className="mb-8 grid grid-cols-1 gap-4 lg:grid-cols-3">
+        <div className="lg:col-span-2">
+          <AffiliateStorefront limit={6} />
+        </div>
+        <DonationWidget />
       </div>
 
       {/* empty state */}

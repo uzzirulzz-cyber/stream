@@ -17,6 +17,7 @@ import { IptvPlayer } from './iptv-player';
 import { AuthDialog } from './auth-dialog';
 import { UserMenu } from './user-menu';
 import { NotificationsBell } from './notifications-bell';
+import { InterstitialAd } from './interstitial-ad';
 import { useFetch } from '@/hooks/use-fetch';
 import { apiAction } from '@/hooks/use-fetch';
 import { toast } from 'sonner';
@@ -250,6 +251,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       <IptvPlayer />
       <AuthDialog />
+      <InterstitialAd />
     </div>
   );
 }

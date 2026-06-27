@@ -70,6 +70,7 @@ model Channel {
   continueWatching ContinueWatching[]
   subscriptions  ChannelSubscription[]
   notifications  Notification[]
+  sponsorships   SponsoredPlacement[]
 
   @@index([category])
   @@index([subcategory])
@@ -334,4 +335,85 @@ model RevenueDaily {
   @@unique([date, source])
   @@index([date])
   @@index([source])
+}
+
+/// Affiliate link / partner offer — earns commission on clicks + conversions.
+model AffiliateLink {
+  id          String   @id @default(cuid())
+  name        String
+  /// betting | merchandise | vpn | streaming_gear | ticketing | fantasy | other
+  category    String   @default("other")
+  targetUrl   String
+  imageUrl    String?
+  headline    String
+  description String?
+  cta         String   @default("Shop Now")
+  /// commission per click in cents
+  cpcCents    Int      @default(0)
+  /// commission per conversion (signup/purchase) in cents
+  cpaCents    Int      @default(0)
+  enabled     Boolean  @default(true)
+  clicks      Int      @default(0)
+  conversions Int      @default(0)
+  revenueCents Int     @default(0)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([category, enabled])
+  @@index([enabled])
+}
+
+/// Donation / tip jar contribution.
+model Donation {
+  id         String   @id @default(cuid())
+  userId     String?
+  amountCents Int
+  currency   String   @default("USD")
+  message    String?
+  /// stripe | paypal | crypto | manual
+  method     String   @default("manual")
+  status     String   @default("completed")
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([userId])
+}
+
+/// Sponsored channel placement — paid promotion in rails/grids.
+model SponsoredPlacement {
+  id        String   @id @default(cuid())
+  channelId String
+  /// home-rail | category-top | search-top | live-top
+  placement String
+  /// sponsor name for the "Sponsored" label
+  sponsor   String
+  /// amount paid in cents
+  paidCents Int      @default(0)
+  active    Boolean  @default(true)
+  startAt   DateTime?
+  endAt     DateTime?
+  createdAt DateTime @default(now())
+
+  channel Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  @@index([placement, active])
+  @@index([channelId])
+}
+
+/// Raw traffic event — page views, sessions, unique visitors.
+/// Drives the RPM (revenue per mille) + traffic monetization calculator.
+model TrafficEvent {
+  id        String   @id @default(cuid())
+  /// page_view | session_start | channel_view | search
+  kind      String
+  path      String?
+  userId    String?
+  country   String?
+  device    String?  // desktop | mobile | tablet | tv
+  referrer  String?
+  createdAt DateTime @default(now())
+
+  @@index([kind, createdAt])
+  @@index([createdAt])
+  @@index([userId])
 }
