@@ -33,9 +33,22 @@ export async function getSessionUser(): Promise<{ id: string; cookie: string; em
 
   let user = await db.user.findUnique({ where: { cookie } });
   if (!user) {
-    user = await db.user.create({
-      data: { cookie, name: 'Guest', role: 'viewer' },
-    });
+    try {
+      user = await db.user.create({
+        data: { cookie, name: 'Guest', role: 'viewer' },
+      });
+    } catch {
+      // Race condition: another request already created this user.
+      // Re-fetch it.
+      user = await db.user.findUnique({ where: { cookie } });
+      if (!user) {
+        // If still null, generate a new cookie and retry.
+        cookie = `anon_${crypto.randomBytes(16).toString('hex')}`;
+        user = await db.user.create({
+          data: { cookie, name: 'Guest', role: 'viewer' },
+        });
+      }
+    }
   }
 
   return {

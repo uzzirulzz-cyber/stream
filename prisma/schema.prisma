@@ -106,7 +106,7 @@ model SportsCategory {
 model User {
   id        String   @id @map("_id") @default(cuid())
   cookie    String   @unique
-  email     String?  @unique
+  email     String?
   name      String?
   password  String?  // hashed (scrypt) — null for anonymous cookie users
   avatar    String?
@@ -119,6 +119,8 @@ model User {
   continueWatching  ContinueWatching[]
   notifications     Notification[]
   channelSubs       ChannelSubscription[]
+
+  @@index([email])
 }
 
 model Favorite {
