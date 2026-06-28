@@ -18,9 +18,23 @@ const TRENDING_KW = [
   'premier league', 'champions league', 'ipl', 'psl', 'f1', 'nba', 'nfl',
 ];
 
+// Adult content keywords — channels matching these are EXCLUDED from import.
+const ADULT_KW = [
+  'xxx', 'adult', 'porn', '18+', '18 +', 'erotic', 'sex', 'nude', 'brazzers',
+  'playboy', 'hustler', 'redlight', 'pink tv', 'babes', 'masturbat', 'orgasm',
+  'strip', 'milf', 'hentai', 'dhc', 'venus', 'super one', 'superone',
+  'midnight', 'private spice', 'xtsy', 'fresh!', 'flirt', 'jktv',
+];
+
 function matchesAny(text: string, kws: string[]): boolean {
   const t = text.toLowerCase();
   return kws.some((k) => t.includes(k));
+}
+
+/** Returns true if a channel name/group should be EXCLUDED (adult content). */
+function isAdultContent(name: string, groupTitle?: string): boolean {
+  const text = `${name} ${groupTitle ?? ''}`.toLowerCase();
+  return ADULT_KW.some((k) => text.includes(k));
 }
 
 export interface ImportResult {
@@ -62,10 +76,16 @@ export async function importPlaylist(playlistId: string): Promise<ImportResult> 
     const toCreate = [];
     let duplicates = 0;
     let errors = 0;
+    let adultFiltered = 0;
 
     for (const ch of parsed) {
       if (!ch.url || !ch.name) {
         errors++;
+        continue;
+      }
+      // EXCLUDE adult content — never imported.
+      if (isAdultContent(ch.name, ch.groupTitle)) {
+        adultFiltered++;
         continue;
       }
       const sig = channelSignature(ch.name, ch.url);
@@ -133,7 +153,7 @@ export async function importPlaylist(playlistId: string): Promise<ImportResult> 
           imported: toCreate.length,
           duplicates,
           errors,
-          message: `Imported ${toCreate.length} channels (${duplicates} duplicates skipped)`,
+          message: `Imported ${toCreate.length} channels (${duplicates} dupes, ${adultFiltered} adult filtered)`,
         },
       }),
     ]);
