@@ -82,7 +82,14 @@ export function IptvPlayer() {
     };
 
     if (isM3u8 && Hls.isSupported()) {
-      const hls = new Hls({ enableWorker: true, lowLatencyMode: true });
+      const hls = new Hls({
+        enableWorker: true,
+        lowLatencyMode: true,
+        // Try to bypass geo-blocking with browser-like headers
+        xhrSetup: (xhr) => {
+          xhr.withCredentials = false;
+        },
+      });
       hlsRef.current = hls;
       hls.loadSource(channel.url);
       hls.attachMedia(video);
@@ -602,7 +609,7 @@ export function IptvPlayer() {
             {channel.country && <span className="rounded bg-white/10 px-2 py-1">{channel.country}</span>}
             {channel.language && <span className="rounded bg-white/10 px-2 py-1">{channel.language}</span>}
             <span className="rounded bg-emerald-500/20 px-2 py-1 text-emerald-400 capitalize">{channel.status}</span>
-            <span className="ml-auto hidden truncate font-mono text-[10px] text-white/30 sm:block">{channel.url}</span>
+            <span className="ml-auto hidden text-[10px] text-white/30 sm:block">Stream ID: {channel.id.slice(-8)}</span>
           </div>
         </div>
       </div>

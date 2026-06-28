@@ -34,12 +34,16 @@ export function toChannelDTO(
 }
 
 /** Mask credentials in URLs so they're never exposed to the client.
- *  Replaces username=XXX&password=YYY with username=***&password=*** */
+ *  For public URLs, still hide them — no playlist source URLs are ever shown. */
 function maskUrl(url: string): string {
-  return url
+  // Mask Xtream credentials
+  let masked = url
     .replace(/(username=)[^&]+/gi, '$1***')
     .replace(/(password=)[^&]+/gi, '$1***')
     .replace(/(\/)[^/]+:[^/@]+@/g, '$1***:***@');
+  // Hide all URLs — never display source links
+  if (masked.includes('***')) return masked;
+  return '[hidden]';
 }
 
 export function toPlaylistDTO(pl: Playlist): PlaylistDTO {

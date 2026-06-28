@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Plus, RefreshCw, Pencil, Trash2, CheckCircle2, AlertTriangle, Loader2, Clock, Link2, ListVideo, History } from 'lucide-react';
+import { Plus, RefreshCw, Pencil, Trash2, CheckCircle2, AlertTriangle, Loader2, Clock, Lock, ListVideo, History } from 'lucide-react';
 import { useFetch, apiAction } from '@/hooks/use-fetch';
 import { useApp } from '@/lib/store';
 import { Button } from '@/components/ui/button';
@@ -137,8 +137,8 @@ function PlaylistRow({
             <div>
               <h3 className="font-bold leading-tight">{playlist.name}</h3>
               <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                <Link2 className="h-3 w-3" />
-                <span className="truncate max-w-[280px] sm:max-w-md">{playlist.url}</span>
+                <Lock className="h-3 w-3" />
+                <span className="text-[11px]">Source hidden · {playlist.channelCount} channels</span>
               </div>
             </div>
             <Badge className={cn('gap-1', statusMeta.cls)}>
@@ -323,8 +323,9 @@ function EditPlaylistDialog({ playlist, open, onOpenChange, onSaved }: { playlis
             <Input value={name} onChange={(e) => setName(e.target.value)} />
           </div>
           <div className="space-y-2">
-            <Label>URL</Label>
-            <Input value={url} onChange={(e) => setUrl(e.target.value)} />
+            <Label>Source URL (hidden for security)</Label>
+            <Input value="••••••••••••••••••••••••" disabled className="bg-muted font-mono" />
+            <p className="text-xs text-muted-foreground">Source URL is encrypted and never displayed.</p>
           </div>
           <div className="space-y-2">
             <Label>Auto-refresh interval (hours)</Label>
