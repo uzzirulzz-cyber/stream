@@ -77,11 +77,16 @@ export function IptvPlayer() {
 
     const isM3u8 = /\.m3u8(\?|$)/i.test(channel.url) || channel.url.includes('m3u8');
 
-    // Geo-unblocker: if the direct stream fails, retry through our server proxy
-    // which fetches with browser-like headers to bypass CORS + some geo-blocks.
+    // Geo-unblocker: proxy rewrites HLS manifests so ALL segment requests
+    // also go through the server (bypassing geo-blocks on segment level).
     const proxyUrl = `/api/proxy/stream?url=${encodeURIComponent(channel.url)}`;
     let triedProxy = false;
     setUnblockerActive(false);
+
+    // Strategy: ALWAYS use proxy first — the proxy rewrites HLS manifests so
+    // ALL segment requests go through the server, bypassing geo-blocks + CORS.
+    // This is more reliable than direct playback which fails on geo-blocked streams.
+    const useProxyFirst = true;
 
     const onReady = () => {
       setLoading(false);
@@ -97,7 +102,10 @@ export function IptvPlayer() {
         },
       });
       hlsRef.current = hls;
-      hls.loadSource(channel.url);
+      // If channel is not verified online, use proxy first (with manifest rewriting)
+      const initialUrl = useProxyFirst ? proxyUrl : channel.url;
+      if (useProxyFirst) setUnblockerActive(true);
+      hls.loadSource(initialUrl);
       hls.attachMedia(video);
       hls.on(Hls.Events.MANIFEST_PARSED, (_e, data) => {
         setLevels(
