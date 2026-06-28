@@ -438,3 +438,47 @@ model WithdrawalRequest {
   @@index([status])
   @@index([createdAt])
 }
+
+/// Upcoming event with optional PPV (pay-per-view) pricing.
+model Event {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  /// Football | Cricket | Wrestling | Movies | Web Series | Music | Other
+  category    String   @default("Other")
+  league      String?
+  /// ISO datetime string
+  eventDate   DateTime
+  /// Human-readable time e.g. "20:00 GMT"
+  eventTime   String
+  venue       String?
+  imageUrl    String?
+  streamUrl   String?
+  /// PPV price in cents (0 = free)
+  ppvPriceCents Int   @default(0)
+  /// is this a PPV event?
+  isPPV       Boolean  @default(false)
+  /// upcoming | live | ended
+  status      String   @default("upcoming")
+  featured    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([category, status])
+  @@index([eventDate])
+  @@index([status])
+}
+
+/// User purchases PPV access to an event.
+model EventPurchase {
+  id        String   @id @default(cuid())
+  userId    String
+  eventId   String
+  priceCents Int
+  status    String   @default("completed") // completed | refunded
+  createdAt DateTime @default(now())
+
+  @@unique([userId, eventId])
+  @@index([userId])
+  @@index([eventId])
+}

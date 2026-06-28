@@ -14,6 +14,7 @@ export type ViewId =
   | 'movies'
   | 'music'
   | 'web-series'
+  | 'events'
   | 'search'
   | 'favorites'
   | 'history'
@@ -65,7 +66,7 @@ function getViewFromUrl(): ViewId {
   if (typeof window === 'undefined') return 'landing';
   const params = new URLSearchParams(window.location.search);
   const v = params.get('view') as ViewId | null;
-  const valid: ViewId[] = ['landing', 'home', 'live', 'football', 'cricket', 'wrestling', 'other-sports', 'movies', 'music', 'web-series', 'search', 'favorites', 'history', 'notifications', 'profile', 'admin'];
+  const valid: ViewId[] = ['landing', 'home', 'live', 'football', 'cricket', 'wrestling', 'other-sports', 'movies', 'music', 'web-series', 'events', 'search', 'favorites', 'history', 'notifications', 'profile', 'admin'];
   return valid.includes(v as ViewId) ? (v as ViewId) : 'landing';
 }
 

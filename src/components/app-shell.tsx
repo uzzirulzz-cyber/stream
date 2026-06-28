@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import {
   Home, Radio, Trophy, Target, Swords, Medal, Search, Heart,
   History, Settings, Menu, Sun, Moon, Tv, RefreshCw, X, UserCircle, Bell,
-  Film, Music, MonitorPlay,
+  Film, Music, MonitorPlay, Calendar,
 } from 'lucide-react';
 import { useApp, type ViewId } from '@/lib/store';
 import { useTheme } from 'next-themes';
@@ -50,6 +50,7 @@ const ENTERTAINMENT_NAV: NavItem[] = [
 const MAIN_NAV: NavItem[] = [
   { id: 'home', label: 'Home', icon: <Home className="h-4 w-4" /> },
   { id: 'live', label: 'Live Now', icon: <Radio className="h-4 w-4" />, accent: 'text-red-500' },
+  { id: 'events', label: 'Events Calendar', icon: <Calendar className="h-4 w-4" />, accent: 'text-amber-500' },
 ];
 
 const LIBRARY_NAV: NavItem[] = [
