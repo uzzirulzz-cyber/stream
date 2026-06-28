@@ -1,6 +1,6 @@
 'use client';
 
-import { Radio, Trophy, Target, Swords, Flame, Clock, Heart, CalendarClock, ChevronRight, Tv, Sparkles, Lightbulb, Crown, Film, Music, MonitorPlay, Medal } from 'lucide-react';
+import { Radio, Trophy, Target, Swords, Flame, Clock, Heart, CalendarClock, ChevronRight, Tv, Sparkles, Lightbulb, Crown, Film, Music, MonitorPlay, Medal, CheckCircle2 } from 'lucide-react';
 import { useFetch } from '@/hooks/use-fetch';
 import { useApp } from '@/lib/store';
 import { ChannelRail } from '@/components/channel-rail';
@@ -25,6 +25,7 @@ interface HomeData {
   sportsChannels: ChannelDTO[];
   movieChannels: ChannelDTO[];
   webSeriesChannels: ChannelDTO[];
+  workingChannels: ChannelDTO[];
   continueWatching: (ChannelDTO & { position?: number; updatedAt?: string })[];
   favorites: ChannelDTO[];
   recommended: ChannelDTO[];
@@ -100,6 +101,15 @@ export function HomeView() {
             View all <ChevronRight className="h-3 w-3" />
           </Button>
         }
+      />
+
+      {/* Working live channels (verified playable) */}
+      <ChannelRail
+        title="✅ Live Streaming — Working Channels"
+        icon={<CheckCircle2 className="h-4 w-4" />}
+        accent="text-emerald-500"
+        channels={data?.workingChannels ?? []}
+        loading={loading}
       />
 
       {/* Featured football */}

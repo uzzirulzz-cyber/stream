@@ -76,6 +76,11 @@ export function IptvPlayer() {
 
     const isM3u8 = /\.m3u8(\?|$)/i.test(channel.url) || channel.url.includes('m3u8');
 
+    // Geo-unblocker: if the direct stream fails, retry through our server proxy
+    // which fetches with browser-like headers to bypass CORS + some geo-blocks.
+    const proxyUrl = `/api/proxy/stream?url=${encodeURIComponent(channel.url)}`;
+    let triedProxy = false;
+
     const onReady = () => {
       setLoading(false);
       video.play().then(() => setPlaying(true)).catch(() => setPlaying(false));
@@ -85,7 +90,6 @@ export function IptvPlayer() {
       const hls = new Hls({
         enableWorker: true,
         lowLatencyMode: true,
-        // Try to bypass geo-blocking with browser-like headers
         xhrSetup: (xhr) => {
           xhr.withCredentials = false;
         },
@@ -104,24 +108,56 @@ export function IptvPlayer() {
       });
       hls.on(Hls.Events.ERROR, (_e, data) => {
         if (data.fatal) {
+          // Geo-unblocker: if direct stream fails with network error, try proxy
+          if (!triedProxy && data.type === Hls.ErrorTypes.NETWORK_ERROR) {
+            triedProxy = true;
+            hls.destroy();
+            const proxyHls = new Hls({ enableWorker: true, lowLatencyMode: true });
+            hlsRef.current = proxyHls;
+            proxyHls.loadSource(proxyUrl);
+            proxyHls.attachMedia(video);
+            proxyHls.on(Hls.Events.MANIFEST_PARSED, () => onReady());
+            proxyHls.on(Hls.Events.ERROR, (_e2, data2) => {
+              if (data2.fatal) {
+                setLoading(false);
+                setError(
+                  data2.type === Hls.ErrorTypes.NETWORK_ERROR
+                    ? 'Stream is geo-blocked or offline. Try Next Channel to find a working stream.'
+                    : 'Stream failed to load. Try Next Channel.',
+                );
+              }
+            });
+            return;
+          }
           setLoading(false);
           setError(
             data.type === Hls.ErrorTypes.NETWORK_ERROR
-              ? 'Network error — stream may be offline or geo-blocked.'
+              ? 'Stream is geo-blocked or offline. Try Next Channel to find a working stream.'
               : data.type === Hls.ErrorTypes.MEDIA_ERROR
-                ? 'Media error — this stream format is not playable.'
-                : 'Stream failed to load.',
+                ? 'Media error — this stream format is not playable. Try Next Channel.'
+                : 'Stream failed to load. Try Next Channel.',
           );
         }
       });
     } else {
       // native playback (Safari / direct mp4 / plain HLS)
+      // Try direct first, fall back to proxy on error
       video.src = channel.url;
       video.addEventListener('loadedmetadata', onReady, { once: true });
       video.addEventListener('error', () => {
-        setLoading(false);
-        setError('Unable to play this stream directly.');
-      });
+        if (!triedProxy) {
+          triedProxy = true;
+          video.src = proxyUrl;
+          video.addEventListener('loadedmetadata', onReady, { once: true });
+          video.addEventListener('error', () => {
+            setLoading(false);
+            setError('Stream is geo-blocked or offline. Try Next Channel to find a working stream.');
+          }, { once: true });
+        } else {
+          setLoading(false);
+          setError('Stream is geo-blocked or offline. Try Next Channel to find a working stream.');
+        }
+      }, { once: true });
     }
 
     // record view + history

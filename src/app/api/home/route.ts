@@ -112,11 +112,13 @@ export async function GET() {
   });
 
   // Category-based rails for the home page: Music, Sports (multi), Movies, Web Series.
-  const [musicChannels, sportsChannels, movieChannels, webSeriesChannels] = await Promise.all([
+  const [musicChannels, sportsChannels, movieChannels, webSeriesChannels, workingChannels] = await Promise.all([
     db.channel.findMany({ where: { enabled: true, category: 'Music' }, include: { playlist: true }, take: 14, orderBy: { viewCount: 'desc' } }),
     db.channel.findMany({ where: { enabled: true, category: 'Other Sports' }, include: { playlist: true }, take: 14, orderBy: { viewCount: 'desc' } }),
     db.channel.findMany({ where: { enabled: true, category: 'Movies' }, include: { playlist: true }, take: 14, orderBy: { viewCount: 'desc' } }),
     db.channel.findMany({ where: { enabled: true, category: 'Web Series' }, include: { playlist: true }, take: 14, orderBy: { viewCount: 'desc' } }),
+    // Working channels (status = online, verified by probe)
+    db.channel.findMany({ where: { enabled: true, status: 'online', featured: true }, include: { playlist: true }, take: 14, orderBy: { viewCount: 'desc' } }),
   ]);
 
   // Hero: pick the most-viewed trending channel, fallback to live now, fallback to first featured.
@@ -145,6 +147,7 @@ export async function GET() {
     sportsChannels: sportsChannels.map(mapFav),
     movieChannels: movieChannels.map(mapFav),
     webSeriesChannels: webSeriesChannels.map(mapFav),
+    workingChannels: workingChannels.map(mapFav),
     continueWatching: continueWatching
       .filter((c) => c.channel)
       .map((c) => ({
