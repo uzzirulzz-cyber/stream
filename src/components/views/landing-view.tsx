@@ -9,6 +9,7 @@ import { useApp } from '@/lib/store';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { DownloadAppButton } from '@/components/download-app';
+import { RandomSections } from '@/components/random-sections';
 import { cn } from '@/lib/utils';
 
 const HERO_SLIDES = [
@@ -219,6 +220,11 @@ export function LandingView() {
             </button>
           ))}
         </div>
+      </section>
+
+      {/* Random motivational sections */}
+      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
+        <RandomSections count={3} />
       </section>
 
       {/* Features */}

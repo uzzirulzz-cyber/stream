@@ -8,6 +8,7 @@ import { AdBanner } from '@/components/ad-banner';
 import { HashtagsWidget } from '@/components/hashtags-widget';
 import { AffiliateStorefront } from '@/components/affiliate-storefront';
 import { DonationWidget } from '@/components/donation-widget';
+import { RandomSections } from '@/components/random-sections';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import type { ChannelDTO } from '@/lib/types';
@@ -185,6 +186,9 @@ export function HomeView() {
         channels={data?.recentlyAdded ?? []}
         loading={loading}
       />
+
+      {/* Random motivational/featured sections with uploaded images */}
+      <RandomSections count={2} />
 
       {/* Category-based rails: Music, Sports, Movies, Web Series */}
       <ChannelRail
