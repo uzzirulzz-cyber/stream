@@ -6,6 +6,7 @@ import { useApp } from '@/lib/store';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { RevenueEstimator } from './revenue-estimator';
+import { EarningsDashboard } from '@/components/views/earnings-dashboard';
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell,
 } from 'recharts';
@@ -56,6 +57,9 @@ export function RevenueDashboard() {
           </Card>
         ))}
       </div>
+
+      {/* My Earnings + Withdraw section */}
+      <EarningsDashboard />
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         {/* Revenue timeseries */}

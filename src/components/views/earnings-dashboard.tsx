@@ -163,10 +163,14 @@ export function EarningsDashboard() {
       <Card>
         <CardHeader><CardTitle className="flex items-center gap-2 text-base"><Wallet className="h-4 w-4" /> How You Earn</CardTitle></CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-5">
+            <div className="rounded-lg bg-emerald-500/10 p-3">
+              <p className="font-bold text-emerald-500">{formatMoney(data.breakdown.signupBonusCents)}</p>
+              <p className="text-xs text-muted-foreground">Signup Bonus</p>
+            </div>
             <div className="rounded-lg bg-muted/60 p-3">
               <p className="font-bold text-brand">{formatMoney(data.breakdown.viewsCents)}</p>
-              <p className="text-xs text-muted-foreground">Channel Views ({data.stats.views})</p>
+              <p className="text-xs text-muted-foreground">Views ({data.stats.views})</p>
             </div>
             <div className="rounded-lg bg-muted/60 p-3">
               <p className="font-bold text-red-500">{formatMoney(data.breakdown.favoritesCents)}</p>
@@ -174,7 +178,7 @@ export function EarningsDashboard() {
             </div>
             <div className="rounded-lg bg-muted/60 p-3">
               <p className="font-bold text-amber-500">{formatMoney(data.breakdown.subsCents)}</p>
-              <p className="text-xs text-muted-foreground">Subscriptions ({data.stats.subscriptions})</p>
+              <p className="text-xs text-muted-foreground">Subs ({data.stats.subscriptions})</p>
             </div>
             <div className="rounded-lg bg-muted/60 p-3">
               <p className="font-bold text-violet-500">{formatMoney(data.breakdown.revenueShareCents)}</p>
