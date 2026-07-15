@@ -515,3 +515,50 @@ Stage Summary:
 - ⚠️ SECURITY: .env was briefly committed to GitHub — passwords should be rotated
 - ✓ .env removed from git tracking, .gitignore fixed
 - Integration code is ready — will work once Bank Alfalah activates the account / provides the hash format
+
+---
+Task ID: JAZZCASH-PAYMENT-INTEGRATION
+Agent: main
+Task: User instruction — add JazzCash payment gateway (repo: github.com/uzzirulzz-cyber/jazzcash)
+
+Work Log:
+- Cloned github.com/uzzirulzz-cyber/jazzcash — empty repo (built from spec instead)
+- Researched JazzCash API via AI: endpoints, fields, SecureHash algorithm
+- Created src/lib/jazzcash.ts — SDK with HMAC-SHA256 SecureHash:
+  * calculateSecureHash() — sorts params alphabetically, joins values with '&',
+    prepends IntegritySalt, HMAC-SHA256 with salt as key, uppercase hex output
+  * createPayment() — builds all required params (pp_Version, pp_TxnType,
+    pp_TxnRefNo, pp_Amount, pp_TxnCurrency, pp_TxnDateTime, pp_BillReference,
+    pp_Description, pp_MerchantID, pp_Password, pp_ReturnURL, pp_Language)
+    + calculates pp_SecureHash
+  * verifyCallbackHash() — verifies callback response authenticity
+  * Sandbox: https://sandbox.jazzcash.com.pk/CentralBankPayment/RestGateway/PaymentAPI
+  * Production: https://jazzcash.com.pk/CentralBankPayment/RestGateway/PaymentAPI
+- Created src/app/api/jazzcash/session/route.ts — POST endpoint:
+  * Validates user logged in
+  * Calls createPayment() with PKR amount (2200 monthly / 22000 yearly)
+  * Returns { success, txnRefNo, apiUrl, postData, redirectUrl, redirectData }
+- Created src/app/api/jazzcash/callback/route.ts — GET + POST endpoint:
+  * Handles both GET (query params) and POST (form data) callbacks
+  * Verifies pp_SecureHash to prevent fraud
+  * Checks pp_ResponseCode ('000' = success)
+  * Matches user by bill reference suffix (VIP<userIdSuffix><timestamp>)
+  * Grants VIP status (30 days monthly / 365 yearly)
+  * Redirects to /?view=adult on success, /?view=home on failure
+- Created src/app/api/admin/jazzcash-status/route.ts — config check
+- Updated src/components/vip-wall.tsx:
+  * Added handleJazzCash() function — calls /api/jazzcash/session,
+    creates auto-submitting POST form with all payment params, submits to JazzCash
+  * Added "Pay with JazzCash" button (red, below Bank Alfalah button)
+- Added env vars to .env + .env.example: JAZZCASH_MERCHANT_ID, PASSWORD,
+  INTEGRITY_SALT, RETURN_URL, ENV
+- Verified endpoints respond correctly (configured:false in mock mode)
+- Committed and pushed to GitHub (commit 63e0c10)
+
+Stage Summary:
+- ✓ JazzCash payment gateway fully integrated with HMAC-SHA256 SecureHash
+- ✓ VIP wall now offers 3 payment options: Subscribe (mock/Payrails), Bank Alfalah, JazzCash
+- ✓ Callback verifies hash + grants VIP + redirects
+- ✓ Pushed to GitHub: https://github.com/uzzirulzz-cyber/stream (commit 63e0c10)
+- ⏳ Waiting for user to provide JAZZCASH_MERCHANT_ID, PASSWORD, INTEGRITY_SALT, RETURN_URL
+- Note: JAZZCASH_RETURN_URL must be publicly accessible (the sandbox can't reach localhost)
