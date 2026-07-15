@@ -61,6 +61,33 @@ export function VipWall() {
     }
   }
 
+  async function handleBankAlfalah() {
+    // If not logged in, prompt signup first.
+    if (!authUser?.email) {
+      toast.info('Please sign up or log in to subscribe to VIP');
+      openAuth('signup');
+      return;
+    }
+    setSubscribing(true);
+    try {
+      const res = await fetch('/api/bankalfalah/session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan: 'monthly' }),
+      });
+      const data = await res.json();
+      if (data.success && data.returnURL) {
+        // Redirect to Bank Alfalah's hosted payment page
+        window.location.href = data.returnURL;
+      } else {
+        toast.error(data.error || 'Failed to start Bank Alfalah payment');
+      }
+    } catch {
+      toast.error('Could not connect to Bank Alfalah');
+    }
+    setSubscribing(false);
+  }
+
   return (
     <div
       className="fixed inset-0 z-[80] flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm"
@@ -148,6 +175,15 @@ export function VipWall() {
                 ) : (
                   <><CreditCard className="h-4 w-4" /> Subscribe &amp; Unlock Now — $8</>
                 )}
+              </Button>
+              {/* Bank Alfalah payment option (Pakistan) */}
+              <Button
+                variant="outline"
+                className="mt-2 w-full gap-2 border-amber-500/40 text-amber-600 hover:bg-amber-500/10 dark:text-amber-400"
+                onClick={handleBankAlfalah}
+                disabled={subscribing}
+              >
+                <CreditCard className="h-4 w-4" /> Pay with Bank Alfalah
               </Button>
             </div>
 

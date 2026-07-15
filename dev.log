@@ -4,13 +4,8 @@
 - Environments: .env
 
 ✓ Starting...
-Attention: Next.js now collects completely anonymous telemetry regarding usage.
-This information is used to shape Next.js' roadmap and prioritize features.
-You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
-https://nextjs.org/telemetry
-
-✓ Ready in 1093ms
+✓ Ready in 1045ms
 ○ Compiling / ...
- GET /api/admin/payrails-status 200 in 3.1s (compile: 3.0s, render: 97ms)
- GET /api/payrails/token 503 in 590ms (compile: 569ms, render: 21ms)
- 590ms (compile: 569ms, render: 21ms)
+ GET /api/admin/bankalfalah-status 200 in 1795ms (compile: 1771ms, render: 23ms)
+ POST /api/bankalfalah/session 503 in 561ms (compile: 554ms, render: 7ms)
+n 561ms (compile: 554ms, render: 7ms)
