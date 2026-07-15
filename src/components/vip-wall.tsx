@@ -88,6 +88,44 @@ export function VipWall() {
     setSubscribing(false);
   }
 
+  async function handleJazzCash() {
+    // If not logged in, prompt signup first.
+    if (!authUser?.email) {
+      toast.info('Please sign up or log in to subscribe to VIP');
+      openAuth('signup');
+      return;
+    }
+    setSubscribing(true);
+    try {
+      const res = await fetch('/api/jazzcash/session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan: 'monthly' }),
+      });
+      const data = await res.json();
+      if (data.success && data.redirectUrl && data.postData) {
+        // JazzCash requires a POST redirect — create an auto-submitting form
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = data.redirectUrl;
+        Object.entries(data.postData).forEach(([key, value]) => {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = key;
+          input.value = String(value);
+          form.appendChild(input);
+        });
+        document.body.appendChild(form);
+        form.submit();
+      } else {
+        toast.error(data.error || 'Failed to start JazzCash payment');
+      }
+    } catch {
+      toast.error('Could not connect to JazzCash');
+    }
+    setSubscribing(false);
+  }
+
   return (
     <div
       className="fixed inset-0 z-[80] flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm"
@@ -184,6 +222,15 @@ export function VipWall() {
                 disabled={subscribing}
               >
                 <CreditCard className="h-4 w-4" /> Pay with Bank Alfalah
+              </Button>
+              {/* JazzCash payment option (Pakistan) */}
+              <Button
+                variant="outline"
+                className="mt-2 w-full gap-2 border-red-500/40 text-red-600 hover:bg-red-500/10 dark:text-red-400"
+                onClick={handleJazzCash}
+                disabled={subscribing}
+              >
+                <CreditCard className="h-4 w-4" /> Pay with JazzCash
               </Button>
             </div>
 

@@ -4,22 +4,7 @@
 - Environments: .env
 
 ✓ Starting...
-✓ Ready in 1260ms
-○ Compiling / ...
- GET /api/admin/bankalfalah-status 200 in 1615ms (compile: 1591ms, render: 24ms)
-⨯ ReferenceError: window is not defined
-    at module evaluation (webpack://mpegts/webpack/universalModuleDefinition:10:4)
-    at module evaluation (src/components/iptv-player.tsx:5:1)
-    at module evaluation (src/components/app-shell.tsx:17:1)
-    at module evaluation (src/app/page.tsx:4:1)
-   8 | 	else
-   9 | 		root["mpegts"] = factory();
-> 10 | })(window, function() {
-     |    ^
-  11 | return  {
-  digest: '1124253160'
-}
- GET / 500 in 13.1s (compile: 12.0s, render: 1188ms)
-⚠ Cross origin request detected from preview-chat-fe2226dc-3f3b-4fae-ac07-0e12cf800401.space-z.ai to /_next/* resource. In a future major version of Next.js, you will need to explicitly configure "allowedDevOrigins" in next.config to allow this.
-Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
-nfig/next-config-js/allowedDevOrigins
+✓ Ready in 1026ms
+ GET /api/admin/jazzcash-status 200 in 887ms (compile: 864ms, render: 23ms)
+ POST /api/jazzcash/session 503 in 246ms (compile: 240ms, render: 6ms)
+n 246ms (compile: 240ms, render: 6ms)
